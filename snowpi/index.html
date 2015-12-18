@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content = "width = 800" /> 
+	<title>WebIOSnowPi</title>
+	<script type="text/javascript" src="/webiopi.js"></script>
+	<script type="text/javascript">
+	webiopi().ready(function() {
+		var content, button;
+		content = $("#content");
+
+		button = webiopi().createGPIOButton(24, "EYE.L");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(23, "EYE.R");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(25, "NOSE");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(7, "A.R");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(8, "B.R");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(9, "C.R");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(17, "A.L");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(18, "B.L");
+		content.append(button);
+
+		button = webiopi().createGPIOButton(22, "C.L");
+		content.append(button);
+
+		button = webiopi().createButton("random", "Go nuts!", randomLights);
+		content.append(button);
+
+		w().refreshGPIO(true);
+	});
+
+	var lights = [7, 8, 9, 17, 18, 22, 23, 24, 25];
+	var doingRandomLights = false;
+
+	function randomLight() {
+		var light = lights[Math.floor(Math.random() * lights.length)];
+		webiopi().toggleValue(light);
+	}
+	function randomLights() {
+		if (doingRandomLights) {
+			doingRandomLights = false;
+			for (var i = 0; i < lights.length; i++) {
+				console.log("turning off " + lights[i]);
+				webiopi().digitalWrite(lights[i], 0);
+			}
+			webiopi().setLabel("random", "Go nuts!");
+		} else {
+			doingRandomLights = true;
+			repeatInterval(0.1, randomLight);
+			webiopi().setLabel("random", "Stop!");
+		}
+	}
+	function repeatInterval(interval, callback) {
+		callback();
+		doLoop();
+		function doLoop() {
+			setTimeout(function() {
+				if (doingRandomLights) {
+					callback();
+					doLoop();
+				}
+			}, interval*1000);
+		}
+	}
+	</script>
+	<style type="text/css">
+	button {
+		margin: 2px 2px 2px 2px;
+		padding-left: 2px;
+		padding-right: 2px;
+		width: auto;
+	}
+
+	#gpio23 {
+		position: absolute;
+		top: 250px;
+    	left: 310px;
+	}
+	#gpio24 {
+		position: absolute;
+		top: 250px;
+    	left: 425px;
+	}
+	#gpio25 {
+		position: absolute;
+		top: 290px;
+    	left: 368px;
+	}
+	#gpio7 {
+		position: absolute;
+		top: 420px;
+    	left: 290px;
+	}
+	#gpio8 {
+		position: absolute;
+		top: 475px;
+    	left: 265px;
+	}
+	#gpio9 {
+		position: absolute;
+		top: 535px;
+    	left: 265px;
+	}
+	#gpio17 {
+		position: absolute;
+		top: 420px;
+    	left: 470px;
+	}
+	#gpio18 {
+		position: absolute;
+		top: 475px;
+    	left: 495px;
+	}
+	#gpio22 {
+		position: absolute;
+		top: 535px;
+    	left: 495px;
+	}
+	#random {
+		position: absolute;
+		top: 100px;
+		left: 360px;
+	}
+		
+	.Description {
+		display: inline;
+	}
+	body {
+		background-image: url("snowpi.jpg");
+		background-repeat: no-repeat;
+	}
+	</style>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>
